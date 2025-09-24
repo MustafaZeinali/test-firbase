@@ -4,6 +4,7 @@ import serviceAccount from './keyService.json' with {type:'json'};
 const router = express();
 
 
+const randomId = Math.floor(Math.random()*10000).toString();
 
 
 
@@ -15,7 +16,7 @@ admin.initializeApp({
 const db = admin.firestore();
 
 
-router.get('/users', async (req , res) =>{
+router.get('/', async (req , res) =>{
 
 
     try {
@@ -26,7 +27,7 @@ router.get('/users', async (req , res) =>{
         res.status(500).send(error)
     }
 })
-router.post('/create', async (req , res) => {
+router.post('/', async (req , res) => {
 
    try {
     const { email , firstName , lastName} = req.body;
@@ -34,7 +35,7 @@ router.post('/create', async (req , res) => {
         return res.status(400).json({error: "eamil is required"})
     } 
     const userData = {email, firstName, lastName} ;
-    await db.collection('newUser').doc(firstName).set(userData)
+    await db.collection('newUser').doc(randomId).set(userData)
     res.status(201).json({message: "user created"})
    } catch (error) {
     res.status(500).json({error: error.message})
@@ -59,5 +60,31 @@ router.post('/create', async (req , res) => {
         res.status(500).json({error: error.message})
     }
 })*/
+router.put("/:id" , async (req , res) =>{
+    try {
+        const {id}= req.params;
+        const updates = req.body;
+        if(!id){
+            return res.status(400).json({error: "Email is requierd in URL"});
+        }
+        await db.collection("newUser").doc(id).update(updates);
+        res.status(200).json({message: "user Updated" , id})
+    } catch (error) {
+        res.status(500).json({error: error.message})
+    }
+})
 
+router.delete('/:id' , async (req , res) =>{
+    try {
+         const {id} = req.params;
+    if(!id){
+        res.status(400).json({error: "id is not correct"})
+    }
+    await db.collection('newUser').doc(id).delete()
+    res.status(200).json({message: "user is Deleted"})
+    } catch (error) {
+        res.status(500).json({error: error.message})
+    }
+   
+})
 export default router
