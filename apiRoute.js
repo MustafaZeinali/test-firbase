@@ -32,11 +32,11 @@ router.post('/', async (req , res) => {
    try {
     const { email , firstName , lastName} = req.body;
     if (!email){
-        return res.status(400).json({error: "eamil is required"})
+        return res.status(400).json({error: "email is required"})
     } 
     const userData = {email, firstName, lastName} ;
-    await db.collection('newUser').doc(randomId).set(userData)
-    res.status(201).json({message: "user created"})
+    const docRef = await db.collection('newUser').add(userData);
+    res.status(201).json({message: "user created" , id: docRef.id})
    } catch (error) {
     res.status(500).json({error: error.message})
    }
