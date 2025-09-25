@@ -1,10 +1,12 @@
 import express from "express";
 import admin from "firebase-admin";
 import serviceAccount from './keyService.json' with {type:'json'};
+import {isNameValid} from "./validation.js";
+import {isEmailValid} from "./validation.js"
 const router = express();
 
 
-const randomId = Math.floor(Math.random()*10000).toString();
+//const randomId = Math.floor(Math.random()*10000).toString();
 
 
 
@@ -30,10 +32,19 @@ router.get('/', async (req , res) =>{
 router.post('/', async (req , res) => {
 
    try {
-    const { email , firstName , lastName} = req.body;
-    if (!email){
-        return res.status(400).json({error: "email is required"})
-    } 
+    const { email, firstName, lastName} = req.body;
+    const firstNameChecked = isNameValid(firstName)
+    if(!firstNameChecked.valid || !firstName){
+        res.status(400).json({error:"firstName is invalid"})
+    }
+    const lastNameCheked = isNameValid(lastName)
+    if(!lastNameCheked.valid || !lastName){
+        res.status(400).json({error : "lastName is invalid"})
+    }
+    const emailValidated= isEmailValid(email)
+    if(!emailValidated.valid || !email){
+        res.status(400).json({error: "email is invalid"})
+    }
     const userData = {email, firstName, lastName} ;
     const docRef = await db.collection('newUser').add(userData);
     res.status(201).json({message: "user created" , id: docRef.id})
