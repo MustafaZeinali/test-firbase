@@ -14,8 +14,12 @@ export function isNameValid (item){
 export function isEmailValid(email){
     // i magonna put code here s oyou need to give me code 
     const regexMail =  /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if(typeof email !== "string"){
+        return {valid:false , message:"Email must be string"}
+    }
     const trimmed = email.trim()
     if(!regexMail.test(trimmed)){
         return {valid: false , meassage: "it is wrong"}
     }
+    return {valid:true , messasge:""}
 }
